@@ -1,9 +1,35 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from 'next/head';
+import Image from 'next/image';
+import { Inter } from 'next/font/google';
+import styles from '@/styles/Home.module.css';
+import { GoogleSignIn } from '../services/firebase';
+import { GoogleAuthProvider, UserCredential } from 'firebase/auth';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
+
+async function accessDashboard() {
+	await GoogleSignIn()
+		.then((result) => {
+			// This gives you a Google Access Token. You can use it to access Google APIs.
+			const credential = GoogleAuthProvider.credentialFromResult(result);
+			var token;
+			(credential != null) ? token = credential.accessToken : null;
+			// The signed-in user info.
+			const user = result.user;
+			// IdP data available using getAdditionalUserInfo(result)
+			// ...
+		}).catch((error) => {
+			// Handle Errors here.
+			const errorCode = error.code;
+			const errorMessage = error.message;
+			// The email of the user's account used.
+			const email = error.customData.email;
+			// The AuthCredential type that was used.
+			const credential = GoogleAuthProvider.credentialFromError(error);
+			// ...
+		});
+}
+
 
 export default function Home() {
 	return (
@@ -22,24 +48,12 @@ export default function Home() {
 
 				<div className={styles.center}>
 					<a
-						href="/"
+						href="#login"
+						onClick={accessDashboard}
 						className={styles.button}
-						target="_blank"
-						rel="noopener noreferrer"
 					>
 						<h2 className={inter.className}>
 							Start Now <span>-&gt;</span>
-						</h2>
-					</a>
-
-					<a
-						href="/"
-						className={styles.button}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<h2 className={inter.className}>
-							Login <span>-&gt;</span>
 						</h2>
 					</a>
 				</div>

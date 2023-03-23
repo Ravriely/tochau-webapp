@@ -24,15 +24,16 @@
 }
 
 .center {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(50%, auto));
+	display: flex;
+	justify-content: center;
+	text-align: center;
+}
+
+.button {
 	width: 50%;
 	max-width: 100%;
 	margin-top: 2rem;
 	justify-content: center;
-}
-
-.button {
 	text-align: center;
 	padding: 5px;
 }
@@ -117,7 +118,6 @@
 	}
 
 	.center {
-		grid-template-columns: 1fr;
 		width: 100%;
 	}
 
