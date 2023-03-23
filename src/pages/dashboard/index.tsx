@@ -1,19 +1,32 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
-import styles from '@/styles/Home.module.css';
-import { GoogleSignIn } from '@/services/firebase';
-import { getAuth } from 'firebase/auth';
+import styles from '@/styles/Dashboard.module.css';
+import { Auth, getAuth } from 'firebase/auth';
+import { getFireAuth, GoogleSignIn, readFireData, writeUserData } from '@/services/firebase';
+import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
 async function accessDashboard() {
-	if (await GoogleSignIn() == true)
-		window.location.href = "/dashboard";
+	let auth: Auth;
+	let data = null;
+
+	if (await GoogleSignIn() == false) return window.location.href = "/";
+	auth = await getFireAuth();
+	data = await readFireData();
+	if (auth.currentUser == null) return window.location.href = "/";
+	console.log(data);
+	if (data == null) {
+		writeUserData(auth.currentUser.uid, null, {
+			username: auth.currentUser.displayName,
+			email: auth.currentUser.email,
+			profile_picture: auth.currentUser.photoURL
+		});
+	}
 }
 
-
-export default function Home() {
+export default function Dashboard() {
 	return (
 		<>
 			<Head>

@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, User, Auth } from "firebase/auth";
+import { getDatabase, ref, onValue, set, DataSnapshot } from "firebase/database";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyAA7TDmyg3BOIY4XuNS_ayvVOikTVfMLC0",
@@ -10,31 +11,54 @@ const firebaseConfig = {
 	appId: "1:239074637095:web:612bf57a6b29cc32772502",
 	measurementId: "G-S61954XMWB"
 };
-
 const app = initializeApp(firebaseConfig);
-export const provider = new GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' });
-export async function GoogleSignIn() {
-	const auth = getAuth();
+const provider = new GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' });
 
-	await signInWithPopup(auth, provider)
-	.then((result) => {
-		
-		// This gives you a Google Access Token. You can use it to access Google APIs.
-		const credential = GoogleAuthProvider.credentialFromResult(result);
-		var token;
-		(credential != null) ? token = credential.accessToken : null;
-		// The signed-in user info.
-		const user = result.user;
-		// IdP data available using getAdditionalUserInfo(result)
-		// ...
-	}).catch((error) => {
-		// Handle Errors here.
-		const errorCode = error.code;
-		const errorMessage = error.message;
-		// The email of the user's account used.
-		const email = error.customData.email;
-		// The AuthCredential type that was used.
-		const credential = GoogleAuthProvider.credentialFromError(error);
-		// ...
-	});;
+export function getFireAuth(): Promise<Auth> {
+	return new Promise(function (resolve, reject) {
+		const auth = getAuth(app);
+		auth.onAuthStateChanged(function (user) {
+			if (user) {
+				resolve(auth);
+			} else {
+				reject(Error("Failed to login"));
+			}
+		});
+	});
+}
+
+export async function GoogleSignIn(): Promise<boolean> {
+	const auth = await getFireAuth();
+
+	if (auth.currentUser == null)
+		await signInWithPopup(auth, provider).catch(() => { console.log("error on login") });
+	else
+		return true;
+	if (auth.currentUser != null)
+		return true;
+	alert("Authentication failed. Be sure that you're connected to internet and your Google account is up.");
+	return false;
+}
+
+export async function readFireData(): Promise<any> {
+	const auth = await getFireAuth();
+	const userId = auth.currentUser?.uid;
+	const db = getDatabase(app, "https://tochau-ab45e-default-rtdb.europe-west1.firebasedatabase.app");
+	const call = ref(db, `users/${userId}`);
+	let data = null;
+
+	return new Promise(function (resolve, reject) {
+		onValue(call, (snapshot: DataSnapshot) => {
+			data = snapshot.val();
+			resolve(data);
+		});
+	})
+}
+
+export function writeUserData(userId: string, path: string | null, json: object) {
+	const db = getDatabase(app, "https://tochau-ab45e-default-rtdb.europe-west1.firebasedatabase.app");
+
+	(path == null) ? path = "" : null;
+	set(ref(db, `users/${userId}/${path}`), json);
+	console.log("wrote");
 }
