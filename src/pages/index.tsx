@@ -3,31 +3,19 @@ import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import { GoogleSignIn } from '../services/firebase';
-import { GoogleAuthProvider, UserCredential } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
 async function accessDashboard() {
-	await GoogleSignIn()
-		.then((result) => {
-			// This gives you a Google Access Token. You can use it to access Google APIs.
-			const credential = GoogleAuthProvider.credentialFromResult(result);
-			var token;
-			(credential != null) ? token = credential.accessToken : null;
-			// The signed-in user info.
-			const user = result.user;
-			// IdP data available using getAdditionalUserInfo(result)
-			// ...
-		}).catch((error) => {
-			// Handle Errors here.
-			const errorCode = error.code;
-			const errorMessage = error.message;
-			// The email of the user's account used.
-			const email = error.customData.email;
-			// The AuthCredential type that was used.
-			const credential = GoogleAuthProvider.credentialFromError(error);
-			// ...
-		});
+	await GoogleSignIn();
+
+	const auth = getAuth();
+
+	if (auth.currentUser != null)
+		window.location.href = "/dashboard";
+	else
+		alert("Authentication failed. Be sure that you're connected to internet and your Google account is up.");
 }
 
 
@@ -48,7 +36,7 @@ export default function Home() {
 
 				<div className={styles.center}>
 					<a
-						href="#login"
+						href="#"
 						onClick={accessDashboard}
 						className={styles.button}
 					>
@@ -60,7 +48,7 @@ export default function Home() {
 
 				<div className={styles.grid}>
 					<a
-						href="/"
+						href="#"
 						className={styles.card}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -83,7 +71,7 @@ export default function Home() {
 
 
 					<a
-						href="/"
+						href="#"
 						className={styles.card}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -106,7 +94,7 @@ export default function Home() {
 
 
 					<a
-						href="/"
+						href="#"
 						className={styles.card}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -129,7 +117,7 @@ export default function Home() {
 
 
 					<a
-						href="/"
+						href="#"
 						className={styles.card}
 						target="_blank"
 						rel="noopener noreferrer"

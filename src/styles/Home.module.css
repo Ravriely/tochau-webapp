@@ -27,6 +27,7 @@
 	display: flex;
 	justify-content: center;
 	text-align: center;
+	width: 100%;
 }
 
 .button {
@@ -93,10 +94,6 @@
 		font-size: 24px;
 	}
 
-	.center {
-		width: 100%;
-	}
-
 	.grid {
 		grid-template-columns: 1fr;
 		max-width: 20rem;
@@ -115,10 +112,6 @@
 
 	.heading h2 {
 		font-size: 1.3rem;
-	}
-
-	.center {
-		width: 100%;
 	}
 
 	.button {
