@@ -18,11 +18,7 @@ export function getFireAuth(): Promise<Auth> {
 	return new Promise(function (resolve, reject) {
 		const auth = getAuth(app);
 		auth.onAuthStateChanged(function (user) {
-			if (user) {
-				resolve(auth);
-			} else {
-				reject(Error("Failed to login"));
-			}
+			resolve(auth);
 		});
 	});
 }
