@@ -1,44 +1,63 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Dashboard.module.css';
-import { Auth, User } from 'firebase/auth';
+import { Auth } from 'firebase/auth';
 import { getFireAuth, GoogleSignIn, readFireData, writeUserData } from '@/services/firebase';
 import React, { useState } from 'react';
 import { accessDashboard } from '..';
 
 const inter = Inter({ subsets: ['latin'] });
-let user: User | null;
-
-async function loadDashboard() {
-    let auth: Auth;
-    let data = null;
-
-    if (await GoogleSignIn() == false) return user = null;
-    auth = await getFireAuth();
-    data = await readFireData();
-    if (auth.currentUser == null) return user = null;
-    console.log(data);
-    if (data == null) {
-        writeUserData(auth.currentUser.uid, null, {
-            username: auth.currentUser.displayName,
-            email: auth.currentUser.email,
-            profile_picture: auth.currentUser.photoURL
-        });
-    }
-    user = auth.currentUser;
-}
 
 export default function Dashboard() {
     const [ username, setUsername ] = useState("e");
-    const getUsername = async function () {
-        await loadDashboard();
-        if (user == null || user.displayName == null)
-            return setUsername("null");
-        setUsername(user.displayName);
+    const [ tasksboards, setTasksboards ] = useState(0);
+
+    const changeWindowLocation = function (newlocation: string) {
+        window.location.href = newlocation;
     }
 
-    getUsername();
+    const loadDashboard = async function () {
+        let auth: Auth;
+        let data = null;
+
+        if (await GoogleSignIn() == false) return;
+        auth = await getFireAuth();
+        data = await readFireData("");
+        if (auth.currentUser == null) return;
+        console.log(data);
+        if (data == null) {
+            writeUserData(auth.currentUser.uid, "", {
+                username: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                profile_picture: auth.currentUser.photoURL
+            });
+        }
+        // get and display username
+        if (auth.currentUser.displayName != null)
+            setUsername(auth.currentUser.displayName);
+        // get and display tasksboards
+        if (data.tasksboards == null && auth.currentUser != null) {
+            writeUserData(auth.currentUser.uid, "tasksboards", {
+                amount: 1,
+                tabs: [
+                    {
+                        name: "mytab",
+                        todos: [
+                            {
+                                title: "example of todo",
+                                description: "this todo is an example",
+                                done: 0
+                            }
+                        ]
+                    }
+                ]
+            });
+            return setTasksboards(0);
+        }
+        setTasksboards(data.tasksboards.amount);
+    }
+
+    loadDashboard();
 
     return (
         <>
@@ -68,7 +87,7 @@ export default function Dashboard() {
                         rel="noopener noreferrer"
                     >
                         <p className={inter.className}>
-                            Organize yourself or your team with our task management dashboard.
+                            You have {tasksboards} tasksboard(s)
                         </p>
                         <h2 className={inter.className}>
                             Tasks Managers <span>-&gt;</span>

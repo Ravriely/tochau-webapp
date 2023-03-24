@@ -2,17 +2,19 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 3rem;
+	padding: 1rem;
 	min-height: 100vh;
 }
 
 .topnav {
-	display: inherit;
+	display: grid;
+	grid-template-columns: repeat(2, 50%);
 	flex-direction: right;
 	justify-content: left;
 	text-align: center;
 	width: var(--max-width);
 	max-width: 100%;
+	margin-bottom: 2rem;
 }
 
 .topbtn {

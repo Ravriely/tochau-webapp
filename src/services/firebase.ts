@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, User, Auth } from "firebase/auth";
-import { getDatabase, ref, onValue, set, DataSnapshot } from "firebase/database";
+import { getDatabase, ref, onValue, set, DataSnapshot, update } from "firebase/database";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyAA7TDmyg3BOIY4XuNS_ayvVOikTVfMLC0",
@@ -36,11 +36,11 @@ export async function GoogleSignIn(): Promise<boolean> {
 	return false;
 }
 
-export async function readFireData(): Promise<any> {
+export async function readFireData(path: string): Promise<any> {
 	const auth = await getFireAuth();
 	const userId = auth.currentUser?.uid;
 	const db = getDatabase(app, "https://tochau-ab45e-default-rtdb.europe-west1.firebasedatabase.app");
-	const call = ref(db, `users/${userId}`);
+	const call = ref(db, `users/${userId}/${path}`);
 	let data = null;
 
 	return new Promise(function (resolve, reject) {
@@ -51,10 +51,10 @@ export async function readFireData(): Promise<any> {
 	})
 }
 
-export function writeUserData(userId: string, path: string | null, json: object) {
+export function writeUserData(userId: string, path: string, json: object) {
 	const db = getDatabase(app, "https://tochau-ab45e-default-rtdb.europe-west1.firebasedatabase.app");
 
 	(path == null) ? path = "" : null;
-	set(ref(db, `users/${userId}/${path}`), json);
+	update(ref(db, `users/${userId}/${path}`), json);
 	console.log("wrote");
 }
