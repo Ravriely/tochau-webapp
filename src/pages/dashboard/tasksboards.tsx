@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Inter } from 'next/font/google';
-import styles from '@/styles/Dashboard.module.css';
+import styles from '@/styles/Tasksboards.module.css';
 import { Auth } from 'firebase/auth';
 import { getFireAuth, GoogleSignIn, readFireData, writeUserData } from '@/services/firebase';
 import React, { useState } from 'react';
@@ -8,14 +8,14 @@ import { accessDashboard } from '..';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function Dashboard() {
+export default function TasksBoardsDashboard() {
     const [ username, setUsername ] = useState("@");
-    const [ tasksboards, setTasksboards ] = useState(0);
+    const [ tasksboards, setTasksboards ] = useState(Array<any>);
 
     const loadDashboard = async function (auto: boolean) {
         if (auto && username != "@") return;
-        let auth: Auth;
         let data = null;
+        let auth: Auth;
 
         if (await GoogleSignIn() == false) return;
         auth = await getFireAuth();
@@ -28,12 +28,10 @@ export default function Dashboard() {
                 email: auth.currentUser.email,
                 profile_picture: auth.currentUser.photoURL
             });
-            data = await readFireData("");
         }
         // get and display username
-        if (auth.currentUser.displayName != null) {
+        if (auth.currentUser.displayName != null)
             setUsername(`@${auth.currentUser.displayName}`);
-        }
         // get and display tasksboards
         if (data.tasksboards == null && auth.currentUser != null) {
             writeUserData(auth.currentUser.uid, "tasksboards", {
@@ -51,9 +49,14 @@ export default function Dashboard() {
                     }
                 ]
             });
-            setTasksboards(1);
+            let task: Array<any> = [];
+            task.push({ name: "mytab" });
+            setTasksboards(task);
         } else {
-            setTasksboards(data.tasksboards.amount);
+            let tasks: Array<any> = [];
+            for (let _board = 0; _board < data.tasksboards.amount; _board++)
+                tasks.push({ name: data.tasksboards.tabs[_board].name });
+                setTasksboards(tasks);
         }
     }
 
@@ -62,7 +65,7 @@ export default function Dashboard() {
     return (
         <>
             <Head>
-                <title>Tochau - Dashboard</title>
+                <title>Tochau - Tasksboards Dashboard</title>
                 <meta name="description" content="The next generation of organization app" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
@@ -80,50 +83,17 @@ export default function Dashboard() {
                 </div>
 
                 <div className={styles.grid}>
-                    <a
-                        href="/dashboard/tasksboards"
-                        className={styles.card}
-                    >
-                        <h2 className={inter.className}>
-                            Tasks Managers <span>-&gt;</span>
-                        </h2>
-                    </a>
-
-
-                    <a
-                        href="#"
-                        className={styles.card}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <h2 className={inter.className}>
-                            Chatrooms <span>-&gt;</span>
-                        </h2>
-                    </a>
-
-
-                    <a
-                        href="#"
-                        className={styles.card}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <h2 className={inter.className}>
-                            Events Planner <span>-&gt;</span>
-                        </h2>
-                    </a>
-
-
-                    <a
-                        href="#"
-                        className={styles.card}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <h2 className={inter.className}>
-                            Confidentiality <span>-&gt;</span>
-                        </h2>
-                    </a>
+                    {tasksboards.map(prop =>
+                        <a
+                            href={`/dashboard/tasksboard?board=${prop.name}`}
+                            className={styles.card}
+                            key={prop.name}
+                        >
+                            <h2 className={inter.className}>
+                                {prop.name} <span>-&gt;</span>
+                            </h2>
+                        </a>
+                    )}
                 </div>
             </main>
         </>
