@@ -3,15 +3,13 @@ import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import { GoogleSignIn } from '@/services/firebase';
-import { getAuth } from 'firebase/auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
-async function accessDashboard() {
+export async function accessDashboard() {
 	if (await GoogleSignIn() == true)
 		window.location.href = "/dashboard";
 }
-
 
 export default function Home() {
 	return (
