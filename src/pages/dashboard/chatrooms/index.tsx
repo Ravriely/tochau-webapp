@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Inter } from 'next/font/google';
-import styles from '@/styles/Tasksboards.module.css';
+import styles from '@/styles/Chatrooms.module.css';
 import { Auth } from 'firebase/auth';
 import { getFireAuth, GoogleSignIn, readFireData } from '@/services/firebase';
 import React, { useState } from 'react';
