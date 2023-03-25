@@ -4,25 +4,22 @@ import styles from '@/styles/Tasksboards.module.css';
 import { Auth } from 'firebase/auth';
 import { getFireAuth, GoogleSignIn, readFireData } from '@/services/firebase';
 import React, { useState } from 'react';
-import { accessDashboard } from '..';
+import { accessDashboard } from '../..';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function TasksBoardsDashboard() {
     const [ username, setUsername ] = useState("@");
-    const [ todos, setTodos ] = useState(Array<any>);
+    const [ tasksboards, setTasksboards ] = useState(Array<any>);
 
     const loadDashboard = async function (auto: boolean) {
         if (auto && username != "@") return;
         let data = null;
         let auth: Auth;
-        let board = new URLSearchParams(document.location.search).get("board");
 
-        if (board == null)
-            return window.location.href = "/dashboard/tasksboards"
         if (await GoogleSignIn() == false) return;
         auth = await getFireAuth();
-        data = await readFireData(`tasksboards/tabs/${board}`);
+        data = await readFireData("tasksboards");
         if (data == null)
             return window.location.href = "/";
         if (auth.currentUser == null) return;
@@ -31,16 +28,15 @@ export default function TasksBoardsDashboard() {
         if (auth.currentUser.displayName != null)
             setUsername(`@${auth.currentUser.displayName}`);
         // get and display tasksboards
-        if (data.todos != null && auth.currentUser != null) {
+        if (data.tabs != null && auth.currentUser != null) {
             let tasks: Array<any> = [];
 
-            for (let _task = 0; _task < data.todos.length; _task++)
+            for (let _board = 0; _board < data.tabs.length; _board++)
                 tasks.push({
-                    name: data.todos[_task].title,
-                    description: data.todos[_task].description,
-                    id: _task
+                    name: data.tabs[_board].name,
+                    id: data.tabs[_board].id
                 });
-            setTodos(tasks);
+            setTasksboards(tasks);
         }
     }
 
@@ -67,18 +63,15 @@ export default function TasksBoardsDashboard() {
                 </div>
 
                 <div className={styles.grid}>
-                    {todos.map(prop =>
+                    {tasksboards.map(prop =>
                         <a
-                            href={`#`}
+                            href={`/dashboard/tasksboards/board?tasks=${prop.id}`}
                             className={styles.card}
-                            key={prop.id}
+                            key={prop.name}
                         >
-                            <h2 className={inter.className} key={prop.name}>
+                            <h2 className={inter.className}>
                                 {prop.name} <span>-&gt;</span>
                             </h2>
-                            <p className={inter.className} key={prop.description}>
-                                {prop.description}
-                            </p>
                         </a>
                     )}
                 </div>
