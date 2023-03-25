@@ -49,6 +49,7 @@ export default function Dashboard() {
                     rooms: [
                         {
                             name: "myroom",
+                            description: "a room to tchatch",
                             id: 0
                         }
                     ]
@@ -146,10 +147,8 @@ export default function Dashboard() {
 
 
                     <a
-                        href="#"
+                        href="/dashboard/chatrooms"
                         className={styles.card}
-                        target="_blank"
-                        rel="noopener noreferrer"
                     >
                         <p className={inter.className}>
                             You have {chatrooms} chatroom(s)

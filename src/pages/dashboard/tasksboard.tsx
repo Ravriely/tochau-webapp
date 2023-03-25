@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Tasksboards.module.css';
 import { Auth } from 'firebase/auth';
-import { getFireAuth, GoogleSignIn, readFireData, writeUserData } from '@/services/firebase';
+import { getFireAuth, GoogleSignIn, readFireData } from '@/services/firebase';
 import React, { useState } from 'react';
 import { accessDashboard } from '..';
 
@@ -40,7 +40,7 @@ export default function TasksBoardsDashboard() {
                     description: data.todos[_task].description,
                     id: _task
                 });
-                setTodos(tasks);
+            setTodos(tasks);
         }
     }
 

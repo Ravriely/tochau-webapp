@@ -4,13 +4,13 @@ import styles from '@/styles/Tasksboards.module.css';
 import { Auth } from 'firebase/auth';
 import { getFireAuth, GoogleSignIn, readFireData } from '@/services/firebase';
 import React, { useState } from 'react';
-import { accessDashboard } from '..';
+import { accessDashboard } from '../..';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function TasksBoardsDashboard() {
+export default function ChatRoomsDashboard() {
     const [ username, setUsername ] = useState("@");
-    const [ tasksboards, setTasksboards ] = useState(Array<any>);
+    const [ chatrooms, setChatrooms ] = useState(Array<any>);
 
     const loadDashboard = async function (auto: boolean) {
         if (auto && username != "@") return;
@@ -19,7 +19,7 @@ export default function TasksBoardsDashboard() {
 
         if (await GoogleSignIn() == false) return;
         auth = await getFireAuth();
-        data = await readFireData("tasksboards");
+        data = await readFireData("chatrooms");
         if (data == null)
             return window.location.href = "/";
         if (auth.currentUser == null) return;
@@ -27,16 +27,16 @@ export default function TasksBoardsDashboard() {
         // get and display username
         if (auth.currentUser.displayName != null)
             setUsername(`@${auth.currentUser.displayName}`);
-        // get and display tasksboards
-        if (data.tabs != null && auth.currentUser != null) {
-            let tasks: Array<any> = [];
+        // get and display chatrooms
+        if (data.rooms != null && auth.currentUser != null) {
+            let rooms: Array<any> = [];
 
-            for (let _board = 0; _board < data.tabs.length; _board++)
-                tasks.push({
-                    name: data.tabs[_board].name,
-                    id: data.tabs[_board].id
+            for (let _room = 0; _room < data.rooms.length; _room++)
+                rooms.push({
+                    name: data.rooms[_room].name,
+                    id: data.rooms[_room].id
                 });
-            setTasksboards(tasks);
+            setChatrooms(rooms);
         }
     }
 
@@ -45,7 +45,7 @@ export default function TasksBoardsDashboard() {
     return (
         <>
             <Head>
-                <title>Tochau - Tasksboards Dashboard</title>
+                <title>Tochau - chatrooms Dashboard</title>
                 <meta name="description" content="The next generation of organization app" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
@@ -63,9 +63,9 @@ export default function TasksBoardsDashboard() {
                 </div>
 
                 <div className={styles.grid}>
-                    {tasksboards.map(prop =>
+                    {chatrooms.map(prop =>
                         <a
-                            href={`/dashboard/tasksboard?board=${prop.id}`}
+                            href={`/dashboard/chatrooms/room?chat=${prop.id}`}
                             className={styles.card}
                             key={prop.name}
                         >
