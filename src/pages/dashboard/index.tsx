@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ['latin'] });
 export default function Dashboard() {
     const [ username, setUsername ] = useState("@");
     const [ tasksboards, setTasksboards ] = useState(0);
+    const [ chatrooms, setChatrooms ] = useState(0);
+    const [ evtplanners, setEvtplanners ] = useState(0);
+    const [ confidentalerts, setConfidentalerts ] = useState(0);
 
     const loadDashboard = async function (auto: boolean) {
         if (auto && username != "@") return;
@@ -26,7 +29,53 @@ export default function Dashboard() {
             writeUserData(auth.currentUser.uid, "", {
                 username: auth.currentUser.displayName,
                 email: auth.currentUser.email,
-                profile_picture: auth.currentUser.photoURL
+                profile_picture: auth.currentUser.photoURL,
+                tasksboards: {
+                    tabs: [
+                        {
+                            name: "mytab",
+                            todos: [
+                                {
+                                    title: "example of todo",
+                                    description: "this todo is an example",
+                                    done: 0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                chatrooms: {
+                    rooms: [
+                        {
+                            name: "myroom",
+                        }
+                    ]
+                },
+                evtplanners: {
+                    planners: [
+                        {
+                            name: "myevent",
+                            activities: [
+                                {
+                                    title: "myactivity",
+                                    description: "example of activity",
+                                    from: 1711362499,
+                                    to: 1711384099
+                                }
+                            ]
+                        }
+                    ]
+                },
+                confidential: {
+                    alerts: [
+                        {
+                            name: "google account phone number",
+                            id: 1,
+                            priority: 2,
+                            active: 0
+                        }
+                    ]
+                }
             });
             data = await readFireData("");
         }
@@ -35,25 +84,25 @@ export default function Dashboard() {
             setUsername(`@${auth.currentUser.displayName}`);
         }
         // get and display tasksboards
-        if (data.tasksboards == null && auth.currentUser != null) {
-            writeUserData(auth.currentUser.uid, "tasksboards", {
-                amount: 1,
-                tabs: [
-                    {
-                        name: "mytab",
-                        todos: [
-                            {
-                                title: "example of todo",
-                                description: "this todo is an example",
-                                done: 0
-                            }
-                        ]
-                    }
-                ]
-            });
-            setTasksboards(1);
-        } else {
-            setTasksboards(data.tasksboards.amount);
+        if (data.tasksboards != null && auth.currentUser != null) {
+            setTasksboards(data.tasksboards.tabs.length);
+        }
+        // get and display chatrooms
+        if (data.chatrooms != null && auth.currentUser != null) {
+            setChatrooms(data.chatrooms.rooms.length);
+        }
+        // get and display events planners
+        if (data.evtplanners != null && auth.currentUser != null) {
+            setEvtplanners(data.evtplanners.planners.length);
+        }
+        // get and display confidential alerts
+        if (data.confidential != null && auth.currentUser != null) {
+            let active = 0;
+
+            for (let _alert = 0; _alert < data.confidential.alerts.length; _alert++)
+                if (data.confidential.alerts[_alert].active == 1)
+                    active++;
+            setConfidentalerts(active);
         }
     }
 
@@ -84,8 +133,11 @@ export default function Dashboard() {
                         href="/dashboard/tasksboards"
                         className={styles.card}
                     >
+                        <p className={inter.className}>
+                            You have {tasksboards} tasksboard(s)
+                        </p>
                         <h2 className={inter.className}>
-                            Tasks Managers <span>-&gt;</span>
+                            Tasksboards <span>-&gt;</span>
                         </h2>
                     </a>
 
@@ -96,6 +148,9 @@ export default function Dashboard() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
+                        <p className={inter.className}>
+                            You have {chatrooms} chatroom(s)
+                        </p>
                         <h2 className={inter.className}>
                             Chatrooms <span>-&gt;</span>
                         </h2>
@@ -108,8 +163,11 @@ export default function Dashboard() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
+                        <p className={inter.className}>
+                            You have {evtplanners} events planner(s)
+                        </p>
                         <h2 className={inter.className}>
-                            Events Planner <span>-&gt;</span>
+                            Events Planners <span>-&gt;</span>
                         </h2>
                     </a>
 
@@ -120,6 +178,9 @@ export default function Dashboard() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
+                        <p className={inter.className}>
+                            You have {confidentalerts} alert(s)
+                        </p>
                         <h2 className={inter.className}>
                             Confidentiality <span>-&gt;</span>
                         </h2>

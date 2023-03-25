@@ -22,39 +22,14 @@ export default function TasksBoardsDashboard() {
         data = await readFireData("");
         if (auth.currentUser == null) return;
         console.log(data);
-        if (data == null) {
-            writeUserData(auth.currentUser.uid, "", {
-                username: auth.currentUser.displayName,
-                email: auth.currentUser.email,
-                profile_picture: auth.currentUser.photoURL
-            });
-        }
         // get and display username
         if (auth.currentUser.displayName != null)
             setUsername(`@${auth.currentUser.displayName}`);
         // get and display tasksboards
-        if (data.tasksboards == null && auth.currentUser != null) {
-            writeUserData(auth.currentUser.uid, "tasksboards", {
-                amount: 1,
-                tabs: [
-                    {
-                        name: "mytab",
-                        todos: [
-                            {
-                                title: "example of todo",
-                                description: "this todo is an example",
-                                done: 0
-                            }
-                        ]
-                    }
-                ]
-            });
-            let task: Array<any> = [];
-            task.push({ name: "mytab" });
-            setTasksboards(task);
-        } else {
+        if (data.tasksboards != null && auth.currentUser != null) {
             let tasks: Array<any> = [];
-            for (let _board = 0; _board < data.tasksboards.amount; _board++)
+
+            for (let _board = 0; _board < data.tasksboards.tabs.length; _board++)
                 tasks.push({ name: data.tasksboards.tabs[_board].name });
                 setTasksboards(tasks);
         }
