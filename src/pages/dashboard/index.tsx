@@ -34,6 +34,7 @@ export default function Dashboard() {
                     tabs: [
                         {
                             name: "mytab",
+                            id: 0,
                             todos: [
                                 {
                                     title: "example of todo",
@@ -48,6 +49,7 @@ export default function Dashboard() {
                     rooms: [
                         {
                             name: "myroom",
+                            id: 0
                         }
                     ]
                 },
@@ -55,6 +57,7 @@ export default function Dashboard() {
                     planners: [
                         {
                             name: "myevent",
+                            id: 0,
                             activities: [
                                 {
                                     title: "myactivity",
@@ -69,8 +72,8 @@ export default function Dashboard() {
                 confidential: {
                     alerts: [
                         {
-                            name: "google account phone number",
-                            id: 1,
+                            name: "gglphone",
+                            id: 0,
                             priority: 2,
                             active: 0
                         }
